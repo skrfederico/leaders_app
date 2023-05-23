@@ -1,7 +1,9 @@
+require('dotenv').config()
 const express = require('express')
 const path = require('path')
 const favicon = require('serve-favicon')
 const logger = require('morgan')
+const groupController = require('./backend/controllers/groupController')
 
 const app = express()
 
@@ -13,11 +15,16 @@ app.use(express.json())
 app.use(favicon(path.join(__dirname, 'build', 'favicon.ico')))
 app.use(express.static(path.join(__dirname, 'build')))
 
+const db = require('./backend/db.js')
+db.once('open', () => {
+  console.log('connected to mongo')
+})
 // Put API routes here, before the "catch all" route
 
 app.get('/api', (req, res) => {
   res.json({ message: 'The API is alive!!!' })
 })
+app.use('/api', groupController)
 
 // The following "catch all" route (note the *) is necessary
 // to return the index.html on all non-AJAX requests
